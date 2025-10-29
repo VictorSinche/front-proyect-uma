@@ -45,6 +45,13 @@ export class AppMenu {
                     { label: 'Misc', icon: 'pi pi-fw pi-circle', routerLink: ['/uikit/misc'] }
                 ]
             },
+                        {
+                label: 'RR.HH',
+                items: [
+                    { label: 'Bandeja de solicitudes', icon: 'pi pi-fw pi-inbox', routerLink: ['/uikit/bandeja'] },
+                    { label: 'Perfil docente', icon: 'pi pi-id-card', routerLink: ['/uikit/perfilesuma'] }
+                ]
+            },
             {
                 label: 'Pages',
                 icon: 'pi pi-fw pi-briefcase',

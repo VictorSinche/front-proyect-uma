@@ -16,7 +16,8 @@ import { Product, ProductService } from '../service/product.service';
     selector: 'app-overlay-demo',
     standalone: true,
     imports: [ToastModule, DialogModule, ButtonModule, DrawerModule, PopoverModule, ConfirmPopupModule, InputTextModule, FormsModule, TooltipModule, TableModule, ToastModule],
-    template: ` <div class="flex flex-col md:flex-row gap-8">
+    template: ` 
+    <div class="flex flex-col md:flex-row gap-8">
         <div class="md:w-1/2">
             <div class="card">
                 <div class="font-semibold text-xl mb-4">Dialog</div>

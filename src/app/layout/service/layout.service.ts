@@ -26,10 +26,18 @@ interface MenuChangeEvent {
     providedIn: 'root'
 })
 export class LayoutService {
+    // _config: layoutConfig = {
+    //     preset: 'Aura',
+    //     primary: 'emerald',
+    //     surface: null,
+    //     darkTheme: false,
+    //     menuMode: 'static'
+    // };
+
     _config: layoutConfig = {
         preset: 'Aura',
-        primary: 'emerald',
-        surface: null,
+        primary: 'blue',
+        surface: 'slate',
         darkTheme: false,
         menuMode: 'static'
     };

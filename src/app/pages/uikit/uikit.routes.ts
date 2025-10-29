@@ -14,11 +14,15 @@ import { TableDemo } from './tabledemo';
 import { OverlayDemo } from './overlaydemo';
 import { TreeDemo } from './treedemo';
 import { MenuDemo } from './menudemo';
-// import { Breadcrumb } from 'primeng/breadcrumb';
-import { Solicitud } from '../solicitud/solicitud';
+import { Breadcrumb } from 'primeng/breadcrumb';
+import { Solicitud } from '../director/solicitud/solicitud';
+import { BandejaSolicitudes } from '../recursos_humanos/bandeja-solicitudes/bandeja-solicitudes';
+import { DocentesPerfilUma } from '../recursos_humanos/docentes-perfil-uma/docentes-perfil-uma';
 
 export default [
     { path: 'solicitud', data: { Breadcrumb: 'solicitud' }, component: Solicitud },
+    { path: 'bandeja', data: { Breadcrumb: 'bandeja' }, component: BandejaSolicitudes },
+    { path: 'perfilesuma',data: { Breadcrumb: 'perfilesuma' }, component: DocentesPerfilUma },
     { path: 'button', data: { breadcrumb: 'Button' }, component: ButtonDemo },
     { path: 'charts', data: { breadcrumb: 'Charts' }, component: ChartDemo },
     { path: 'file', data: { breadcrumb: 'File' }, component: FileDemo },

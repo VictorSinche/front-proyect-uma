@@ -17,10 +17,21 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ToggleButtonModule } from 'primeng/togglebutton';
-import { Customer, CustomerService, Representative } from '../service/customer.service';
-import { Product, ProductService } from '../service/product.service';
+import { Country, Customer, CustomerService, Representative } from '../../service/customer.service';
+import { Product, ProductService } from '../../service/product.service';
 import { ObjectUtils } from 'primeng/utils';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { DatePickerModule } from 'primeng/datepicker';
+import { ToolbarModule } from 'primeng/toolbar';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { AccordionModule } from 'primeng/accordion';
+import { FieldsetModule } from 'primeng/fieldset';
+import { MenuModule } from 'primeng/menu';
+import { DividerModule } from 'primeng/divider';
+import { SplitterModule } from 'primeng/splitter';
+import { PanelModule } from 'primeng/panel';
+import { TabsModule } from 'primeng/tabs';
 
 interface expandedRows {
     [key: string]: boolean;
@@ -29,24 +40,35 @@ interface expandedRows {
 @Component({
   selector: 'app-solicitud',
     imports: [
-      InputTextModule, 
-      FluidModule, 
-      ButtonModule, 
-      SelectModule, 
-      FormsModule, 
-      TextareaModule,
-      TableModule,
-      MultiSelectModule,
-      InputIconModule,
-      TagModule,
-      SliderModule,
-      ProgressBarModule,
-      ToggleButtonModule,
-      ToastModule,
-      CommonModule,
-      RatingModule,
-      RippleModule,
-      IconFieldModule
+        InputTextModule, 
+        FluidModule, 
+        ButtonModule, 
+        SelectModule, 
+        FormsModule, 
+        TextareaModule,
+        TableModule,
+        MultiSelectModule,
+        InputIconModule,
+        TagModule,
+        SliderModule,
+        ProgressBarModule,
+        ToggleButtonModule,
+        ToastModule,
+        CommonModule,
+        RatingModule,
+        RippleModule,
+        IconFieldModule,
+        RadioButtonModule,
+        DatePickerModule,
+        ToolbarModule,
+        SplitButtonModule,
+        AccordionModule,
+        FieldsetModule,
+        MenuModule,
+        DividerModule,
+        SplitterModule,
+        PanelModule,
+        TabsModule,
     ],
   templateUrl: './solicitud.html',
   styleUrl: './solicitud.scss',
@@ -55,48 +77,138 @@ interface expandedRows {
 })
 export class Solicitud implements OnInit{
 
-  customers1: Customer[] = [];
-  
-  customers2: Customer[] = [];
-  
-  customers3: Customer[] = [];
-  
-  selectedCustomers1: Customer[] = [];
-  
-  selectedCustomer: Customer = {};
-  
-  representatives: Representative[] = [];
-  
-  statuses: any[] = [];
-  
-  products: Product[] = [];
-  
-  rowGroupMetadata: any;
-  
-  expandedRows: expandedRows = {};
-  
-  activityValues: number[] = [0, 100];
-  
-  isExpanded: boolean = false;
-  
-  balanceFrozen: boolean = false;
-  
-  loading: boolean = true;
-  
-  dropdownItems = [
-    { name: 'Option 1', code: 'Option 1' },
-    { name: 'Option 2', code: 'Option 2' },
-    { name: 'Option 3', code: 'Option 3' }
-  ];
+    customers1: Customer[] = [];
+    
+    customers2: Customer[] = [];
+    
+    customers3: Customer[] = [];
+    
+    selectedCustomers1: Customer[] = [];
+    
+    selectedCustomer: Customer = {};
+    
+    representatives: Representative[] = [];
+    
+    statuses: any[] = [];
+    
+    products: Product[] = [];
+    
+    rowGroupMetadata: any;
+    
+    expandedRows: expandedRows = {};
+    
+    activityValues: number[] = [0, 100];
+    
+    isExpanded: boolean = false;
+    
+    balanceFrozen: boolean = false;
+    
+    loading: boolean = true;
 
-  dropdownItem = null;
+    radioValue: any = null;
 
-  @ViewChild('filter') filter!: ElementRef;
+    loadingEnviar = [false, false, false, false];
 
-  constructor(
-    private customerService: CustomerService,
-    private productService: ProductService
-  ) {}
+    date3: Date | undefined;
+
+    horaMananaInicio : any = null
+    
+    horaMananaFin : any = null
+
+    horaTardeInicio : any = null
+    
+    horaTardeFin : any = null
+
+    horaNocheInicio : any = null
+    
+    horaNocheFin : any = null
+
+    horaSabadoInicio : any = null
+    
+    horaSabadoFin : any = null
+    
+    dropdownFacultad = [
+        { name: 'CIENCIAS DE LA SALUD', code: 'S' },
+        { name: 'INGENIERÍA Y NEGOCIOS', code: 'E' },
+    ];
+
+    dropdownEspecialidad = [
+        // Facultad de Ciencias de la Salud
+        { name: 'Medicina', code: 'S' },
+        { name: 'Enfermería', code: 'S' },
+        { name: 'Nutrición y Dietética', code: 'S' },
+        { name: 'Tecnología Médica', code: 'S' },
+        { name: 'Psicología', code: 'S' },
+
+        // Facultad de Ingeniería y Negocios
+        { name: 'Ingeniería Industrial', code: 'E' },
+        { name: 'Ingeniería de Sistemas', code: 'E' },
+        { name: 'Ingeniería Civil', code: 'E' },
+        { name: 'Administración de Empresas ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', code: 'E' },
+        { name: 'Contabilidad y Finanzas', code: 'E' },
+    ];
+
+
+    dropdownCiclo = [
+        { name: '1', code: '1' },
+        { name: '2', code: '2' },
+        { name: '3', code: '3' },
+        { name: '4', code: '4' },
+        { name: '5', code: '6' },
+        { name: '6', code: '7' },
+        { name: '7', code: '8' },
+        { name: '8', code: '9' },
+        { name: '9', code: '10' },
+        { name: '10', code: '11' },
+    ];
+
+    dropdownCurso = [
+        { name: 'MATEMATICA', code: '' },
+        { name: 'INGLES', code: '' },
+    ];
+
+    multiselectCountries: Country[] = [
+        { name: 'DESARROLLO DE PRODUCTOS DE EXPORTACIÓN', code: '' },
+        { name: 'ÉTICA PROFESIONAL', code: '' },
+        { name: 'AUDITORIA ADMINISTRATIVA', code: '' },
+        { name: 'PRACTICAS', code: '' },
+        { name: 'CALIDAD TOTAL', code: '' },
+        { name: 'GESTIÓN DE PEQUEÑAS Y MEDIANAS EMPRESAS PARA LA EXPORTACIÓN', code: '' },
+        { name: 'ELECTIVO', code: '' },
+        { name: 'LENGUAJE Y COMUNICACIÓN', code: '' },
+        { name: 'MATEMÁTICA I', code: 'ES' },
+        { name: 'REALIDAD NACIONAL Y GLOBALIZACIÓN', code: '' }
+    ];
+    
+    multiselectSelectedCountries!: Country[];
+
+    dropdownPrioridad = [
+        { name: 'Baja', code: 'B' },
+        { name: 'Media', code: 'M' },
+        { name: 'Alta', code: 'A' },
+    ];
+
+    dropdownTurno = [
+        { name: 'MAÑANA', code: '' },
+        { name: 'TARDE', code: '' },
+        { name: 'NOCHE', code: '' },
+        { name: 'SABADO', code: '' },
+    ];
+
+    dropdownModalidad = [
+        { name: 'PRESENCIAL', code: '' },
+        { name: 'SEMIPRESENCIAL', code: '' },
+        { name: 'VIRTUAL', code: '' },
+    ];
+
+    dropdownItem = null;    
+
+    @ViewChild('filter') filter!: ElementRef;
+
+    constructor(
+        private customerService: CustomerService,
+        private productService: ProductService
+    ) {}
 
     ngOnInit() {
         this.customerService.getCustomersLarge().then((customers) => {
@@ -124,10 +236,10 @@ export class Solicitud implements OnInit{
         ];
 
         this.statuses = [
-            { label: 'Unqualified', value: 'unqualified' },
-            { label: 'Qualified', value: 'qualified' },
+            { label: 'Requiere contratación', value: 'unqualified' },
+            { label: 'Asignado', value: 'qualified' },
             { label: 'New', value: 'new' },
-            { label: 'Negotiation', value: 'negotiation' },
+            { label: 'En revisión', value: 'negotiation' },
             { label: 'Renewal', value: 'renewal' },
             { label: 'Proposal', value: 'proposal' }
         ];
@@ -236,5 +348,10 @@ export class Solicitud implements OnInit{
         }
 
         return total;
+    }
+
+    load(index: number) {
+        this.loadingEnviar[index] = true;
+        setTimeout(() => (this.loadingEnviar[index] = false), 1000);
     }
 }
