@@ -1,4 +1,300 @@
 <div class="card">
+    <p-breadcrumb [model]="breadcrumbItems" [home]="breadcrumbHome"></p-breadcrumb>
     <div class="font-semibold text-xl mb-4">Búsqueda por perfil</div>
-    <p>Filtra por curso, especialidad y modalidad. El % Match estima qué tan cerca está el perfil al requerimiento..</p>
+    <p>Filtra por curso, especialidad y modalidad. El % Match estima qué tan cerca está el perfil al requerimiento.</p>
+    <div class="border-b border-gray-300"></div>
+
+    <div class="mt-4">
+        <p-table
+            #dt1
+            [value]="customers1"
+            dataKey="id"
+            [rows]="10"
+            [loading]="loading"
+            [rowHover]="true"
+            [showGridlines]="true"
+            [paginator]="true"
+            [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+            responsiveLayout="scroll"
+        >
+            <ng-template #caption>
+                <div class="flex justify-between items-center flex-column sm:flex-row">
+                    <button pButton label="Limpiar" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon>
+                            <i class="pi pi-search"></i>
+                        </p-inputicon>
+                        <input pInputText type="text" (input)="onGlobalFilter(dt1, $event)" placeholder="Buscador" />
+                    </p-iconfield>
+                </div>
+            </ng-template>
+            <ng-template #header>
+                <tr>
+                    <th style="min-width: 12rem">
+                        <div class="flex justify-between items-center">
+                            Name
+                            <p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width: 12rem">
+                        <div class="flex justify-between items-center">
+                            Country
+                            <p-columnFilter type="text" field="country.name" display="menu" placeholder="Search by country"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width: 14rem">
+                        <div class="flex justify-between items-center">
+                            Agent
+                            <p-columnFilter field="representative" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                                <ng-template #header>
+                                    <div class="px-3 pt-3 pb-0">
+                                        <span class="font-bold">Agent Picker</span>
+                                    </div>
+                                </ng-template>
+                                <ng-template #filter let-value let-filter="filterCallback">
+                                    <p-multiselect [ngModel]="value" [options]="representatives" placeholder="Any" (onChange)="filter($event.value)" optionLabel="name" styleClass="w-full">
+                                        <ng-template let-option #item>
+                                            <div class="flex items-center gap-2 w-44">
+                                                <img [alt]="option.label" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}" width="32" />
+                                                <span>{{ option.name }}</span>
+                                            </div>
+                                        </ng-template>
+                                    </p-multiselect>
+                                </ng-template>
+                            </p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width: 10rem">
+                        <div class="flex justify-between items-center">
+                            Date
+                            <p-columnFilter type="date" field="date" display="menu" placeholder="mm/dd/yyyy"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width: 10rem">
+                        <div class="flex justify-between items-center">
+                            Balance
+                            <p-columnFilter type="numeric" field="balance" display="menu" currency="USD"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width: 12rem">
+                        <div class="flex justify-between items-center">
+                            Estado
+                            <p-columnFilter field="status" matchMode="equals" display="menu">
+                                <ng-template #filter let-value let-filter="filterCallback">
+                                    <p-select [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)" placeholder="Any" [style]="{ 'min-width': '12rem' }">
+                                        <ng-template let-option #item>
+                                            <span [class]="'customer-badge status-' + option.value">{{ option.label }}</span>
+                                        </ng-template>
+                                    </p-select>
+                                </ng-template>
+                            </p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width: 12rem">
+                        <div class="flex justify-between items-center">
+                            Activity
+                            <p-columnFilter field="activity" matchMode="between" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                                <ng-template #filter let-filter="filterCallback">
+                                    <p-slider [ngModel]="activityValues" [range]="true" (onSlideEnd)="filter($event.values)" styleClass="m-3" [style]="{ 'min-width': '12rem' }"></p-slider>
+                                    <div class="flex items-center justify-between px-2">
+                                        <span>{{ activityValues[0] }}</span>
+                                        <span>{{ activityValues[1] }}</span>
+                                    </div>
+                                </ng-template>
+                            </p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width: 8rem">
+                        <div class="flex justify-between items-center">
+                            Verified
+                            <p-columnFilter type="boolean" field="verified" display="menu"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width: 8rem">
+                        <div class="flex justify-between items-center">
+                            Acciones
+                        </div>
+                    </th>
+                </tr>
+            </ng-template>
+            
+            <ng-template #body let-customer>
+                <tr>
+                    <td>
+                        {{ customer.name }}
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-2">
+                            <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" [class]="'flag flag-' + customer.country.code" width="30" />
+                            <span>{{ customer.country.name }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-2">
+                            <img [alt]="customer.representative.name" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ customer.representative.image }}" width="32" style="vertical-align: middle" />
+                            <span class="image-text">{{ customer.representative.name }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {{ customer.date | date: 'MM/dd/yyyy' }}
+                    </td>
+                    <td>
+                        {{ customer.balance | currency: 'USD' : 'symbol' }}
+                    </td>
+                    <td>
+                        <p-tag [value]="customer.status.toLowerCase()" [severity]="getSeverity(customer.status.toLowerCase())" styleClass="dark:bg-surface-900!" />
+                    </td>
+                    <td>
+                        <p-progressbar [value]="customer.activity" [showValue]="false" [style]="{ height: '0.5rem' }" />
+                    </td>
+                    <td class="text-center">
+                        <p-tag [value]="customer.status.toLowerCase()" [severity]="getSeverity(customer.status.toLowerCase())" styleClass="dark:bg-surface-900!" />
+                    </td>
+                    <td class="text-center">
+                        <p-button icon="pi pi-file" severity="info" label="Expandir perfil" (click)="showDialog('center')"/>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="8">No customers found.</td>
+                </tr>
+            </ng-template>
+            <ng-template #loadingbody>
+                <tr>
+                    <td colspan="8">Loading customers data. Please wait.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+
+<!-- modal -->
+<div>
+  <p-dialog
+    header="Perfil del docente"
+    [modal]="true"
+    [(visible)]="visible"
+    [position]="position"
+    [style]="{ width: '63rem', maxWidth: '95vw' }"
+    [dismissableMask]="true"
+  >
+    <div class="border-b border-gray-300 mb-4"></div>
+    <div class="grid grid-cols-12 gap-4">
+      <!-- Columna izquierda: Foto + estados -->
+    <div class="col-span-12 md:col-span-4 lg:col-span-4">
+        <div
+            class="rounded-xl border border-surface-200 dark:border-surface-700 p-5 bg-surface-0 dark:bg-surface-900 flex flex-col items-start"
+        >
+            <!-- Imagen / Avatar -->
+            <div
+                class="rounded-xl border border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800 
+                        w-60 h-70 flex items-center justify-center mb-4 self-center"
+                >
+                <p-avatar
+                    image="https://www.shutterstock.com/image-photo/passport-photo-man-on-white-260nw-2538513719.jpg"
+                    shape="square"
+                    size="xlarge"
+                    style="width: 12rem; height: 15rem;"
+                ></p-avatar>
+            </div>
+
+            <!-- Estado de disponibilidad -->
+            <div class="flex items-center gap-2 mb-3 text-sm">
+            <i class="pi pi-calendar-clock text-surface-500"></i>
+            <span class="font-bold text-[13px]">Disponibilidad:</span>
+            <p-tag
+                [value]="profile.disponible ? 'Disponible' : 'No disponible'"
+                [severity]="profile.disponible ? 'success' : 'danger'"
+                styleClass="text-xs"
+            ></p-tag>
+            </div>
+
+            <!-- Modalidad -->
+            <div class="flex items-center gap-2 mb-3 text-sm">
+            <i class="pi pi-briefcase text-surface-500"></i>
+            <span class="font-bold text-[13px]">Modalidad:</span>
+            <p-tag
+                [value]="profile.modalidad.toUpperCase()"
+                severity="info"
+                styleClass="text-xs uppercase"
+            ></p-tag>
+            </div>
+
+            <!-- Porcentaje Match -->
+            <div class="flex items-center gap-2 text-sm">
+            <i class="pi pi-chart-line text-surface-500"></i>
+            <span class="font-bold text-[13px]">% Match:</span>
+            <p-tag
+                [value]="profile.match + '%'"
+                [severity]="profile.match > 80 ? 'success' : profile.match > 50 ? 'warn' : 'danger'"
+                styleClass="text-xs"
+            ></p-tag>
+            </div>
+        </div>
+    </div>
+
+        <!-- Columna derecha: contenido -->
+        <div class="col-span-12 md:col-span-8 lg:col-span-8">
+            <div class="mb-4">
+            <p class="font-bold text-2xl">{{ profile.nombre }}</p>
+            <p class="">{{ profile.especialidad }}</p>
+            </div>
+            <!-- Tarjetas en grid -->
+            <div class="grid grid-cols-12 gap-4">
+            <section class="col-span-12 lg:col-span-6 rounded-xl border border-surface-200 dark:border-surface-700 p-4 bg-gray-100 dark:bg-surface-900">
+                <p class="text-lg font-bold mb-2">Grados y formación</p>
+                <ul class="list-disc pl-5 space-y-2">
+                <li *ngFor="let g of profile.grados">{{ g }}</li>
+                </ul>
+            </section>
+            <section class="col-span-12 lg:col-span-6 rounded-xl border border-surface-200 dark:border-surface-700 p-4 bg-gray-100 dark:bg-surface-900">
+                <p class="text-lg font-bold mb-2">Experiencia relevante</p>
+                <ul class="list-disc pl-5 space-y-2">
+                <li *ngFor="let e of profile.experiencia">{{ e }}</li>
+                </ul>
+            </section>
+            <section class="col-span-12 lg:col-span-6 rounded-xl border border-surface-200 dark:border-surface-700 p-4 bg-gray-100 dark:bg-surface-900">
+                <p class="text-lg font-bold mb-2">Cursos que puede dictar</p>
+                <ul class="list-disc pl-5 space-y-2">
+                <li *ngFor="let c of profile.cursos">{{ c }}</li>
+                </ul>
+            </section>
+            <section class="col-span-12 lg:col-span-6 rounded-xl border border-surface-200 dark:border-surface-700 p-4 bg-gray-100 dark:bg-surface-900">
+                <p class="text-lg font-bold mb-2">Certificaciones</p>
+                <ul class="list-disc pl-5 space-y-2">
+                <li *ngFor="let cert of profile.certificaciones">{{ cert }}</li>
+                </ul>
+            </section>
+            <section class="col-span-12 lg:col-span-6 rounded-xl border border-surface-200 dark:border-surface-700 p-4 bg-gray-100 dark:bg-surface-900">
+                <p class="text-lg font-bold mb-2">Contacto</p>
+                <div class="space-y-1 text-sm">
+                <div>{{ profile.email }}</div>
+                <div>{{ profile.telefono }}</div>
+                </div>
+            </section>
+            <section class="col-span-12 lg:col-span-6 rounded-xl border border-surface-200 dark:border-surface-700 p-4 bg-gray-100 dark:bg-surface-900">
+                <p class="text-lg font-bold mb-2">Notas de RR.HH</p>
+                <p class="text-sm leading-relaxed">
+                {{ profile.notas }}
+                </p>
+            </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="mt-6 flex flex-col sm:flex-row gap-3 sm:justify-end">
+      <p-button
+        label="Enviar como sugerido"
+        styleClass="p-button-outlined"
+        (onClick)="enviarSugerido(profile)"
+      />
+      <p-button
+        label="Generar contrato"
+        (onClick)="generarContrato(profile)"
+      />
+    </div>
+  </p-dialog>
 </div>

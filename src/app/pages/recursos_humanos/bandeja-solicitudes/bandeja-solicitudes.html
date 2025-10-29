@@ -1,11 +1,8 @@
 <div class="card">
-    <div class="flex flex-col gap-2 w-full">
-    <div class="font-semibold text-xl">Solicitudes de docentes</div>
-        <p class="text-sm text-gray-600">
-            Gestiona, filtra y atiende las solicitudes enviadas por los Directores de Escuela.
-        </p>
-        <div class="border-b"></div>
-    </div>
+    <p-breadcrumb [model]="breadcrumbItems" [home]="breadcrumbHome"></p-breadcrumb>
+    <div class="font-semibold text-xl mb-4">Solicitudes de docentes</div>
+    <p>Gestiona, filtra y atiende las solicitudes enviadas por los Directores de Escuela.</p>
+    <div class="border-b border-gray-300"></div>
 
     <div class="mt-4">
         <p-table
@@ -235,8 +232,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
             <button pButton type="button" label="Ver coincidencias internas" class="p-button-help w-full" (click)="showDialog('left')"></button>
             <!-- <button pButton type="button" label="Responder con sugeridos" class="p-button-success w-full"></button> -->
-            <button pButton type="button" label="Buscar postulantes" class="p-button-info w-full"></button>
-            <!-- <button pButton type="button" label="Crear convocatoria" class="p-button-warning w-full"></button> -->
+            <button pButton type="button" label="Buscar postulantes" class="p-button-info w-full" routerLink="/uikit/perfilesuma"></button>
+            <button pButton type="button" label="Crear convocatoria" class="p-button-warning w-full"></button>
         </div>
     </div>
     <!-- Footer fijo -->
@@ -274,46 +271,46 @@
         [style]="{ width: '75rem' }">
         <span class="text-surface-500 dark:text-surface-400 block mb-8">Update your information.</span>
 
-<div class="card">
-    <p-table #dt [value]="products" (sortFunction)="customSort($event)" [customSort]="true">
-        <ng-template #header>
-            <tr>
-                <th pSortableColumn="code">
-                    <div class="flex items-center gap-2">
-                        Code
-                        <p-sortIcon field="code" />
-                    </div>
-                </th>
-                <th pSortableColumn="name">
-                    <div class="flex items-center gap-2">
-                        Name
-                        <p-sortIcon field="name" />
-                    </div>
-                </th>
-                <th pSortableColumn="category">
-                    <div class="flex items-center gap-2">
-                        Category
-                        <p-sortIcon field="category" />
-                    </div>
-                </th>
-                <th pSortableColumn="quantity">
-                    <div class="flex items-center gap-2">
-                        Quantity
-                        <p-sortIcon field="quantity" />
-                    </div>
-                </th>
-            </tr>
-        </ng-template>
-        <ng-template #body let-product>
-            <tr>
-                <td>{{ product.code }}</td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.category }}</td>
-                <td>{{ product.quantity }}</td>
-            </tr>
-        </ng-template>
-    </p-table>
-</div>
+    <div class="card">
+        <p-table #dt [value]="products" (sortFunction)="customSort($event)" [customSort]="true">
+            <ng-template #header>
+                <tr>
+                    <th pSortableColumn="code">
+                        <div class="flex items-center gap-2">
+                            Code
+                            <p-sortIcon field="code" />
+                        </div>
+                    </th>
+                    <th pSortableColumn="name">
+                        <div class="flex items-center gap-2">
+                            Name
+                            <p-sortIcon field="name" />
+                        </div>
+                    </th>
+                    <th pSortableColumn="category">
+                        <div class="flex items-center gap-2">
+                            Category
+                            <p-sortIcon field="category" />
+                        </div>
+                    </th>
+                    <th pSortableColumn="quantity">
+                        <div class="flex items-center gap-2">
+                            Quantity
+                            <p-sortIcon field="quantity" />
+                        </div>
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-product>
+                <tr>
+                    <td>{{ product.code }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category }}</td>
+                    <td>{{ product.quantity }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
 
     </p-dialog>
 </div>

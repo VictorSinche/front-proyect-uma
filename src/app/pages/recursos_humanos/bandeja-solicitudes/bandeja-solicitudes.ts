@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccordionModule } from 'primeng/accordion';
-import { ConfirmationService, MessageService, SortEvent } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService, SortEvent } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { Dialog } from 'primeng/dialog';
@@ -35,6 +36,7 @@ import { ToastModule } from 'primeng/toast';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ObjectUtils } from 'primeng/utils';
+import { RouterLink } from "@angular/router";
 
 interface expandedRows {
     [key: string]: boolean;
@@ -43,50 +45,51 @@ interface expandedRows {
 @Component({
   selector: 'app-bandeja-solicitudes',
   imports: [
-        InputTextModule, 
-        FluidModule, 
-        ButtonModule, 
-        SelectModule, 
-        FormsModule, 
-        TextareaModule,
-        TableModule,
-        MultiSelectModule,
-        InputIconModule,
-        TagModule,
-        SliderModule,
-        ProgressBarModule,
-        ToggleButtonModule,
-        ToastModule,
-        CommonModule,
-        RatingModule,
-        RippleModule,
-        IconFieldModule,
-        RadioButtonModule,
-        DatePickerModule,
-        ToolbarModule,
-        SplitButtonModule,
-        AccordionModule,
-        FieldsetModule,
-        MenuModule,
-        DividerModule,
-        SplitterModule,
-        PanelModule,
-        TabsModule,
-				DrawerModule,
-				ScrollPanelModule,
-				Dialog,
-  ],
+    InputTextModule,
+    FluidModule,
+    ButtonModule,
+    SelectModule,
+    FormsModule,
+    TextareaModule,
+    TableModule,
+    MultiSelectModule,
+    InputIconModule,
+    TagModule,
+    SliderModule,
+    ProgressBarModule,
+    ToggleButtonModule,
+    ToastModule,
+    CommonModule,
+    RatingModule,
+    RippleModule,
+    IconFieldModule,
+    RadioButtonModule,
+    DatePickerModule,
+    ToolbarModule,
+    SplitButtonModule,
+    AccordionModule,
+    FieldsetModule,
+    MenuModule,
+    DividerModule,
+    SplitterModule,
+    PanelModule,
+    TabsModule,
+    DrawerModule,
+    ScrollPanelModule,
+    Dialog,
+    BreadcrumbModule,
+    RouterLink
+],
   templateUrl: './bandeja-solicitudes.html',
   styleUrl: './bandeja-solicitudes.scss',
-	providers: [ConfirmationService, MessageService, CustomerService, ProductService]
-
+  providers: [ConfirmationService, MessageService, CustomerService, ProductService]
 })
 
 export class BandejaSolicitudes implements OnInit{
   @ViewChild('filter') filter!: ElementRef;
   @ViewChild('dt') dt!: Table;
   
-		customers1: Customer[] = [];
+	customers1: Customer[] = [];
 
     customers2: Customer[] = [];
 
@@ -114,31 +117,36 @@ export class BandejaSolicitudes implements OnInit{
 
     loading: boolean = true;
 
-		visibleRight: boolean = false;
+	visibleRight: boolean = false;
 
-		visible: boolean = false;
+	visible: boolean = false;
 
     position: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'center';
 
-		productsModal: Product[] = [];
+	productsModal: Product[] = [];
 
     initialValue: Product[] = [];
 
     isSorted: boolean | null = null;
+
+    breadcrumbHome: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
+    breadcrumbItems: MenuItem[] = [
+        { label: 'Bandeja de solicitudes', routerLink: '/uikit/bandeja' },
+    ];
 		
-		solicitud = {
-			id: 12,
-			estado: 'Pendiente',
-			director: 'Ing. Pérez',
-			fecha: '28/10/2025',
-			curso: 'Programación Web',
-			especialidad: 'Sistemas',
-			tipo: 'TP',
-			cantidad: 1,
-			facultad: 'INGENIERIA Y NEGOClOS',
-			prioridad: 'Alta',
-			observacion: 'Requiere disponibilidad en turno noche.'
-		};
+	solicitud = {
+		id: 12,
+		estado: 'Pendiente',
+		director: 'Ing. Pérez',
+		fecha: '28/10/2025',
+		curso: 'Programación Web',
+		especialidad: 'Sistemas',
+		tipo: 'TP',
+		cantidad: 1,
+		facultad: 'INGENIERIA Y NEGOClOS',
+		prioridad: 'Alta',
+		observacion: 'Requiere disponibilidad en turno noche.'
+	};
 
     constructor(
         private customerService: CustomerService,
@@ -289,12 +297,12 @@ export class BandejaSolicitudes implements OnInit{
         return total;
     }
 
-		showDialog(position: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright') {
+	showDialog(position: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright') {
         this.position = position;
         this.visible = true;
     }
 
-		customSort(event: SortEvent) {
+	customSort(event: SortEvent) {
         if (this.isSorted == null || this.isSorted === undefined) {
             this.isSorted = true;
             this.sortTableData(event);

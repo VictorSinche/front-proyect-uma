@@ -144,10 +144,9 @@ export class Solicitud implements OnInit{
         { name: 'Ingeniería Industrial', code: 'E' },
         { name: 'Ingeniería de Sistemas', code: 'E' },
         { name: 'Ingeniería Civil', code: 'E' },
-        { name: 'Administración de Empresas ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', code: 'E' },
+        { name: 'Administración de Empresas', code: 'E' },
         { name: 'Contabilidad y Finanzas', code: 'E' },
     ];
-
 
     dropdownCiclo = [
         { name: '1', code: '1' },
