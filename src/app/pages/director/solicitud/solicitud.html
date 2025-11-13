@@ -1,3 +1,5 @@
+<p-toast></p-toast>
+
 <div class="card">
     <p-fluid>
         <div class="flex">
@@ -5,162 +7,199 @@
                 <div class="flex flex-col gap-2 w-full">
                     <div class="font-semibold text-xl">Nueva solicitud de docente</div>
                     <p class="text-sm text-gray-600">
-                        Indica curso, especialidad y tipo de contratación. 
+                        Indica curso, especialidad y tipo de contratación.
                         Los campos marcados con * son obligatorios.
                     </p>
                 <div class="border-b border-gray-300"></div>
-                </div>
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="flex flex-wrap gap-2 w-full">
-                        <label for="state">Facultad *</label>
-                        <p-select id="state" [(ngModel)]="dropdownItem" [options]="dropdownFacultad" optionLabel="name" placeholder="Seleccione Facultad" class="w-full"></p-select>
+                <div>
                     </div>
-                    <div class="flex flex-wrap gap-2 w-full md:max-w-[49%]">
-                        <label for="state">Especialidad *</label>
-                        <p-select id="state" [(ngModel)]="dropdownItem" [options]="dropdownEspecialidad" optionLabel="name" placeholder="Seleccione Especialidad" class="w-full"></p-select>
-                    </div>
-                </div>
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex flex-wrap gap-2 w-full">
+                            <label for="state" class="font-bold">Facultad *</label>
+                            <p-select
+                                [(ngModel)]="selectedFacultad"
+                                [options]="dropdownFacultad"
+                                optionLabel="name"
+                                placeholder="Seleccione Facultad"
+                                class="w-full"
+                                [ngClass]="{ 'p-invalid': errores.facultad }"
+                                (onChange)="onChangeFacultad()">
+                            </p-select>
+                            <p-message *ngIf="mostrarErrores && ! selectedFacultad" severity="error" text="Campo obligatorio."></p-message>
+                        </div>
+                        <div class="flex flex-wrap gap-2 w-full md:max-w-[49%]">
+                            <label for="state" class="font-bold">Especialidad *</label>
+                            <p-select
+                                [(ngModel)]="selectedEspecialidad"
+                                [options]="dropdownEspecialidad"
+                                optionLabel="name"
+                                placeholder="Seleccione Especialidad"
+                                [emptyMessage]="'Seleccione primero una facultad 😕'"
+                                class="w-full"
+                                [ngClass]="{ 'p-invalid': errores.especialidad }"
+                                (onChange)="onChangeEspecialidad()">
+                            </p-select>
+                            <p-message *ngIf="mostrarErrores && !selectedEspecialidad" severity="error" text="Campo obligatorio."></p-message>
 
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="flex flex-wrap gap-2 w-full">
-                        <label for="state">Ciclo *</label>
-                        <p-select id="state" [(ngModel)]="dropdownItem" [options]="dropdownCiclo" optionLabel="name" placeholder="Seleccione Ciclo" class="w-full"></p-select>
+                        </div>
                     </div>
-                    <div class="flex flex-wrap gap-2 w-full md:max-w-[49%]">
-                        <label for="state">Curso *</label>
-                        <p-multiselect [options]="multiselectCountries" [(ngModel)]="multiselectSelectedCountries" placeholder="Seleccione Cursos" optionLabel="name" display="chip" [filter]="true">
-                            <ng-template #selecteditems let-countries>
-                                <div class="">
-                                    @for (country of countries; track country.code) {
-                                        <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2 mb-1">
-                                            <span [class]="'mr-2 flag flag-' + country.code.toLowerCase()" style="width: 18px; height: 12px"></span>
-                                            <div>{{ country.name }}</div>
+
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex flex-wrap gap-2 w-full">
+                            <label for="state" class="font-bold">Ciclo *</label>
+                            <p-select
+                            [(ngModel)]="selectedCiclo"
+                            [options]="dropdownCiclo"
+                            optionLabel="name"
+                            placeholder="Seleccione Ciclo"
+                            [emptyMessage]="'Seleccione primero una especialidad 😕'"
+                            class="w-full"
+                            [ngClass]="{ 'p-invalid': errores.ciclo }"
+                            (onChange)="onChangeCiclo()">
+                            </p-select>
+                            <p-message *ngIf="mostrarErrores && !selectedCiclo" severity="error" text="Campo obligatorio."></p-message>
+
+                        </div>
+                        <div class="flex flex-wrap gap-2 w-full">
+                            <label for="state" class="font-bold">Modalidad *</label>
+                            <p-select
+                            [(ngModel)]="selectedModalidad"
+                            [options]="dropdownModalidad"
+                            optionLabel="name"
+                            placeholder="Seleccione Modalidad"
+                            [emptyMessage]="'Seleccione primero un ciclo 😕'"
+                            class="w-full"
+                            [ngClass]="{ 'p-invalid': errores.modalidad }"
+                            (onChange)="onChangeModalidad()">
+                            </p-select>
+                            <p-message *ngIf="mostrarErrores && !selectedModalidad" severity="error" text="Campo obligatorio."></p-message>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex flex-wrap gap-2 w-full md:max-w-[49%]">
+                            <label for="state" class="font-bold">Curso *</label>
+                                <p-multiselect
+                                    [options]="dropdownCurso"
+                                    [(ngModel)]="selectedCursos"
+                                    placeholder="Seleccione Cursos"
+                                    [emptyMessage]="'Seleccione primero una modalidad 😕'"
+                                    optionLabel="name"
+                                    display="chip"
+                                    [filter]="true"
+                                    [ngClass]="{ 'p-invalid': errores.curso }">
+
+                                    <ng-template let-cursos pTemplate="selectedItems">
+                                        <div class="">
+                                        <ng-container *ngFor="let curso of selectedCursos; trackBy: trackByCurso">
+                                            <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2 mb-1">
+                                            <span class="mr-2 font-semibold text-sm">[{{ curso.value }}]</span>
+                                            <div>{{ curso.name }}</div>
+                                            </div>
+                                        </ng-container>
                                         </div>
-                                    }
-                                </div>
-                            </ng-template>
+                                    </ng-template>
 
-                            <ng-template #item let-country>
+                                    <!-- Ítems en dropdown -->
+                                    <ng-template let-curso pTemplate="item">
+                                        <div class="flex items-center">
+                                            <span class="mr-2 font-semibold text-sm">[{{ curso.value }}]</span>
+                                            <div>{{ curso.name }}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-multiselect>
+                            <p-message *ngIf="mostrarErrores && !selectedCursos.length" severity="error" text="Campo obligatorio."></p-message>
+                        </div>
+                        <div class="flex flex-col gap-2 w-full">
+                            <label class="text-base font-bold">Tipo de docente *</label>
+                            <div class="flex flex-col sm:flex-row gap-4">
                                 <div class="flex items-center">
-                                    <span [class]="'mr-2 flag flag-' + country.code.toLowerCase()" style="width: 18px; height: 12px"></span>
-                                    <div>{{ country.name }}</div>
+                                    <p-radiobutton id="option1" name="tipo" value="completo" [(ngModel)]="radioValue" [ngClass]="{ 'p-invalid': errores.tipo }"/>
+                                    <label for="option1" class="ml-2 cursor-pointer">Tiempo completo</label>
                                 </div>
-                            </ng-template>
-                        </p-multiselect>
-                    </div>
-                </div>
+                                <div class="flex items-center">
+                                    <p-radiobutton id="option2" name="tipo" value="parcial" [(ngModel)]="radioValue" [ngClass]="{ 'p-invalid': errores.tipo }"/>
+                                    <label for="option2" class="ml-2 cursor-pointer">Tiempo parcial</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <p-radiobutton id="option3" name="tipo" value="mixto" [(ngModel)]="radioValue" [ngClass]="{ 'p-invalid': errores.tipo }"/>
+                                    <label for="option3" class="ml-2 cursor-pointer">Mixto</label>
+                                </div>
+                                <p-message *ngIf="mostrarErrores && !radioValue" severity="error" text="Campo obligatorio."></p-message>
 
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="flex flex-col gap-2 w-full">
-                        <label class="text-base font-medium">Tipo de docente *</label>
-                        <div class="flex flex-col sm:flex-row gap-4">
-                        <div class="flex items-center">
-                            <p-radiobutton id="option1" name="tipoDocente" value="Tiempo completo" [(ngModel)]="radioValue" />
-                            <label for="option1" class="ml-2 cursor-pointer">Tiempo completo</label>
-                        </div>
-                        <div class="flex items-center">
-                            <p-radiobutton id="option2" name="tipoDocente" value="Tiempo parcial" [(ngModel)]="radioValue" />
-                            <label for="option2" class="ml-2 cursor-pointer">Tiempo parcial</label>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap gap-2 w-full">
-                        <label for="state">Modalidad *</label>
-                        <p-select id="state" [(ngModel)]="dropdownItem" [options]="dropdownModalidad" optionLabel="name" placeholder="Seleccione Modalidad" class="w-full"></p-select>
-                    </div>
-                </div>
-
-                <div class="flex flex-col md:flex-row gap-6">
-                    <p-fieldset legend="Disponibilidad por Turno" [toggleable]="true" [collapsed]="true">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Mañana -->
-                            <div class="col-span-2">
-                                <label class="font-bold">Mañana</label>
-                                <div class="flex gap-4 mt-2">
-                                    <p-datepicker [(ngModel)]="horaMananaInicio" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay" placeholder="Hora inicio">
-                                        <ng-template #inputicon let-clickCallBack="clickCallBack" >
-                                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
-                                        </ng-template>
-                                    </p-datepicker>
-                                    <p-datepicker [(ngModel)]="horaMananaFin" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay" placeholder="Hora fin">
-                                        <ng-template #inputicon let-clickCallBack="clickCallBack">
-                                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
-                                        </ng-template>
-                                    </p-datepicker>
-                                </div>
-                            </div>
-                            <!-- Tarde -->
-                            <div class="col-span-2">
-                                <label class="font-bold">Tarde</label>
-                                <div class="flex gap-4 mt-2">
-                                    <p-datepicker [(ngModel)]="horaTardeInicio" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay" placeholder="Hora inicio">
-                                        <ng-template #inputicon let-clickCallBack="clickCallBack">
-                                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
-                                        </ng-template>
-                                    </p-datepicker>
-                                    <p-datepicker [(ngModel)]="horaTardeFin" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay" placeholder="Hora fin">
-                                        <ng-template #inputicon let-clickCallBack="clickCallBack">
-                                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
-                                        </ng-template>
-                                    </p-datepicker>
-                                </div>
-                            </div>
-                            <!-- Noche -->
-                            <div class="col-span-2">
-                                <label class="font-bold">Noche</label>
-                                <div class="flex gap-4 mt-2">
-                                    <p-datepicker [(ngModel)]="horaNocheInicio" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay" placeholder="Hora inicio">
-                                        <ng-template #inputicon let-clickCallBack="clickCallBack">
-                                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
-                                        </ng-template>
-                                    </p-datepicker>
-                                    <p-datepicker [(ngModel)]="horaNocheFin" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay" placeholder="Hora fin">
-                                        <ng-template #inputicon let-clickCallBack="clickCallBack">
-                                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
-                                        </ng-template>
-                                    </p-datepicker>
-                                </div>
-                            </div>
-                            <!-- Sábado -->
-                            <div class="col-span-2">
-                                <label class="font-bold">Sábado</label>
-                                <div class="flex gap-4 mt-2">
-                                    <p-datepicker [(ngModel)]="horaSabadoInicio" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay" placeholder="Hora inicio">
-                                        <ng-template #inputicon let-clickCallBack="clickCallBack">
-                                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
-                                        </ng-template>
-                                    </p-datepicker>
-                                    <p-datepicker [(ngModel)]="horaSabadoFin" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay" placeholder="Hora fin">
-                                        <ng-template #inputicon let-clickCallBack="clickCallBack">
-                                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
-                                        </ng-template>
-                                    </p-datepicker>
-                                </div>
                             </div>
                         </div>
-                    </p-fieldset>
-                </div>
-
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="flex flex-wrap gap-2 w-full">
-                        <label for="zip">Horas a dictar *</label>
-                        <input pInputText id="zip" type="number" />
                     </div>
-                    <div class="flex flex-wrap gap-2 w-full">
-                        <label for="state">Prioridad *</label>
-                        <p-select id="state" [(ngModel)]="dropdownItem" [options]="dropdownPrioridad" optionLabel="name" placeholder="Seleccione Especialidad" class="w-full"></p-select>
-                    </div>
-                </div>
-                
-                <div class="flex flex-wrap">
-                    <label for="address">Observaciones</label>
-                    <textarea pTextarea id="address" rows="4" placeholder="Detalles relevantes: horarios, modalidad sugerida, requisitos del perfil, etc."></textarea>
-                </div>
+                    
+                    <div class="flex flex-col md:flex-row gap-6 mt-4">
+                        <p-fieldset 
+                            legend="Disponibilidad por Turno *" 
+                            [toggleable]="true" 
+                            [collapsed]="true"
+                            [ngClass]="{ 'p-invalid-fieldset': errorDisponibilidad }">
 
-                <div class="flex flex-col gap-4">
-                    <div class="flex flex-wrap gap-2">
-                        <p-button type="button" label="Enviar solicitud" icon="pi pi-check" [loading]="loadingEnviar[0]" (click)="load(0)" />
-                        <p-button label="Limpiar" icon="pi pi-trash" severity="danger" raised />
+                            <!-- Encabezado corregido (3 columnas) -->
+                            <div class="grid grid-cols-3 gap-4 font-semibold p-2 rounded">
+                                <div>Día</div>
+                                <div class="text-center">Mañana</div>
+                                <div class="text-center">Noche</div>
+                            </div>
+
+                            <!-- Contenido -->
+                            <div *ngFor="let dia of dias" class="grid grid-cols-3 gap-4 items-center py-2">
+                                
+                                <!-- Día -->
+                                <div class="font-bold">
+                                    {{ dia.nombre }}
+                                </div>
+
+                                <!-- Mañana -->
+                                <div class="flex gap-2 justify-center">
+                                    <p-datepicker [(ngModel)]="dia.manianaInicio" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" placeholder="Inicio"></p-datepicker>
+                                    <p-datepicker [(ngModel)]="dia.manianaFin" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" placeholder="Fin"></p-datepicker>
+                                </div>
+
+                                <!-- Noche -->
+                                <div class="flex gap-2 justify-center">
+                                    <p-datepicker [(ngModel)]="dia.nocheInicio" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" placeholder="Inicio"></p-datepicker>
+                                    <p-datepicker [(ngModel)]="dia.nocheFin" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" placeholder="Fin"></p-datepicker>
+                                </div>
+
+                            </div>
+
+                        </p-fieldset>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-6 mt-3">
+                        <div class="flex flex-wrap gap-2 w-full">
+                            <label for="horas" class="font-bold">Horas a dictar *</label>
+                            <input pInputText id="horas" type="number" [(ngModel)]="horasDictar" [ngClass]="{ 'p-invalid': errores.facultad }"/>
+                            <p-message *ngIf="mostrarErrores && !horasDictar" severity="error" text="Campo obligatorio."></p-message>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 w-full">
+                            <label for="pago" class="font-bold">Pago por horas *</label>
+                            <input pInputText id="pago" type="number" [(ngModel)]="pagoHoras" [ngClass]="{ 'p-invalid': errores.facultad }"/>
+                            <p-message *ngIf="mostrarErrores && !pagoHoras" severity="error" text="Campo obligatorio."></p-message>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 w-full">
+                            <label for="state" class="font-bold">Prioridad *</label>
+                            <p-select id="state" [(ngModel)]="selectedPrioridad" [options]="dropdownPrioridad" optionLabel="name" placeholder="Seleccione Especialidad" class="w-full" [ngClass]="{ 'p-invalid': errores.facultad }"></p-select>
+                            <p-message *ngIf="mostrarErrores && !selectedPrioridad" severity="error" text="Prioridad es obligatoria."></p-message>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap">
+                        <label for="address" class="font-bold">Observaciones</label>
+                        <textarea pTextarea id="address" rows="4" placeholder="Detalles relevantes: horarios, modalidad sugerida, requisitos del perfil, etc."    ></textarea>
+                    </div>
+
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-wrap gap-2">
+                            <p-button type="button" label="Enviar solicitud" icon="pi pi-check" [loading]="loadingEnviar[0]" (click)="enviarSolicitud(0)" severity="success"/>
+                            <p-button label="Limpiar" icon="pi pi-trash" severity="danger" raised (click)="limpiarFormulario()" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -217,7 +256,9 @@
                                     </div>
                                 </ng-template>
                                 <ng-template #filter let-value let-filter="filterCallback">
-                                    <p-multiselect [ngModel]="value" [options]="representatives" placeholder="Any" (onChange)="filter($event.value)" optionLabel="name" styleClass="w-full">
+                                    <p-multiselect [ngModel]="value" [options]="representatives" placeholder="Any" (onChange)="filter($event.value)" optionLabel="name" styleClass="w-full"
+                                                                [ngClass]="{ 'p-invalid': errores.facultad }"
+>
                                         <ng-template let-option #item>
                                             <div class="flex items-center gap-2 w-44">
                                                 <img [alt]="option.label" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}" width="32" />
@@ -323,4 +364,5 @@
             </ng-template>
         </p-table>
     </div>
+
 </div>

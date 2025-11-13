@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { FluidModule } from 'primeng/fluid';
@@ -32,6 +32,8 @@ import { DividerModule } from 'primeng/divider';
 import { SplitterModule } from 'primeng/splitter';
 import { PanelModule } from 'primeng/panel';
 import { TabsModule } from 'primeng/tabs';
+import { SolicitudService } from '@/pages/service/solicitud.service';
+import { MessageModule } from 'primeng/message';
 
 interface expandedRows {
     [key: string]: boolean;
@@ -69,6 +71,7 @@ interface expandedRows {
         SplitterModule,
         PanelModule,
         TabsModule,
+        MessageModule,
     ],
   templateUrl: './solicitud.html',
   styleUrl: './solicitud.scss',
@@ -76,6 +79,47 @@ interface expandedRows {
 
 })
 export class Solicitud implements OnInit{
+  
+  messageService = inject(MessageService);
+  errores: any = {};
+  errorDisponibilidad = false;
+  mostrarErrores = false;
+
+  // Formulario Solicitud
+  dropdownFacultad = [];
+  dropdownEspecialidad = [];
+  dropdownCiclo = [];
+  dropdownModalidad = [];
+  dropdownCurso = [];
+  dropdownPrioridad = [
+    { name: 'Alta', value: 1 },
+    { name: 'Media', value: 2 },
+    { name: 'Baja', value: 3 },
+  ];
+
+  selectedFacultad: any;
+  selectedEspecialidad: any;
+  selectedCiclo: any;
+  selectedModalidad: any;
+  selectedCursos: any[] = [];
+  radioValue: string = '';
+  selectedPrioridad: any;
+  horasDictar: number = 0;
+  pagoHoras: number = 0;
+  observaciones: string = '';
+
+  dias = [
+    { nombre: 'Lunes', manianaInicio: null, manianaFin: null, nocheInicio: null, nocheFin: null },
+    { nombre: 'Martes', manianaInicio: null, manianaFin: null, nocheInicio: null, nocheFin: null },
+    { nombre: 'Miércoles', manianaInicio: null, manianaFin: null, nocheInicio: null, nocheFin: null },
+    { nombre: 'Jueves', manianaInicio: null, manianaFin: null, nocheInicio: null, nocheFin: null },
+    { nombre: 'Viernes', manianaInicio: null, manianaFin: null, nocheInicio: null, nocheFin: null },
+    { nombre: 'Sábado', manianaInicio: null, manianaFin: null, nocheInicio: null, nocheFin: null },
+    { nombre: 'Domingo', manianaInicio: null, manianaFin: null, nocheInicio: null, nocheFin: null }
+  ];
+
+
+  //--------------------
 
     customers1: Customer[] = [];
     
@@ -105,108 +149,18 @@ export class Solicitud implements OnInit{
     
     loading: boolean = true;
 
-    radioValue: any = null;
+    // radioValue: any = null;
 
     loadingEnviar = [false, false, false, false];
 
     date3: Date | undefined;
 
-    horaMananaInicio : any = null
-    
-    horaMananaFin : any = null
-
-    horaTardeInicio : any = null
-    
-    horaTardeFin : any = null
-
-    horaNocheInicio : any = null
-    
-    horaNocheFin : any = null
-
-    horaSabadoInicio : any = null
-    
-    horaSabadoFin : any = null
-    
-    dropdownFacultad = [
-        { name: 'CIENCIAS DE LA SALUD', code: 'S' },
-        { name: 'INGENIERÍA Y NEGOCIOS', code: 'E' },
-    ];
-
-    dropdownEspecialidad = [
-        // Facultad de Ciencias de la Salud
-        { name: 'Medicina', code: 'S' },
-        { name: 'Enfermería', code: 'S' },
-        { name: 'Nutrición y Dietética', code: 'S' },
-        { name: 'Tecnología Médica', code: 'S' },
-        { name: 'Psicología', code: 'S' },
-
-        // Facultad de Ingeniería y Negocios
-        { name: 'Ingeniería Industrial', code: 'E' },
-        { name: 'Ingeniería de Sistemas', code: 'E' },
-        { name: 'Ingeniería Civil', code: 'E' },
-        { name: 'Administración de Empresas', code: 'E' },
-        { name: 'Contabilidad y Finanzas', code: 'E' },
-    ];
-
-    dropdownCiclo = [
-        { name: '1', code: '1' },
-        { name: '2', code: '2' },
-        { name: '3', code: '3' },
-        { name: '4', code: '4' },
-        { name: '5', code: '6' },
-        { name: '6', code: '7' },
-        { name: '7', code: '8' },
-        { name: '8', code: '9' },
-        { name: '9', code: '10' },
-        { name: '10', code: '11' },
-    ];
-
-    dropdownCurso = [
-        { name: 'MATEMATICA', code: '' },
-        { name: 'INGLES', code: '' },
-    ];
-
-    multiselectCountries: Country[] = [
-        { name: 'DESARROLLO DE PRODUCTOS DE EXPORTACIÓN', code: '' },
-        { name: 'ÉTICA PROFESIONAL', code: '' },
-        { name: 'AUDITORIA ADMINISTRATIVA', code: '' },
-        { name: 'PRACTICAS', code: '' },
-        { name: 'CALIDAD TOTAL', code: '' },
-        { name: 'GESTIÓN DE PEQUEÑAS Y MEDIANAS EMPRESAS PARA LA EXPORTACIÓN', code: '' },
-        { name: 'ELECTIVO', code: '' },
-        { name: 'LENGUAJE Y COMUNICACIÓN', code: '' },
-        { name: 'MATEMÁTICA I', code: 'ES' },
-        { name: 'REALIDAD NACIONAL Y GLOBALIZACIÓN', code: '' }
-    ];
-    
-    multiselectSelectedCountries!: Country[];
-
-    dropdownPrioridad = [
-        { name: 'Baja', code: 'B' },
-        { name: 'Media', code: 'M' },
-        { name: 'Alta', code: 'A' },
-    ];
-
-    dropdownTurno = [
-        { name: 'MAÑANA', code: '' },
-        { name: 'TARDE', code: '' },
-        { name: 'NOCHE', code: '' },
-        { name: 'SABADO', code: '' },
-    ];
-
-    dropdownModalidad = [
-        { name: 'PRESENCIAL', code: '' },
-        { name: 'SEMIPRESENCIAL', code: '' },
-        { name: 'VIRTUAL', code: '' },
-    ];
-
-    dropdownItem = null;    
-
     @ViewChild('filter') filter!: ElementRef;
 
     constructor(
         private customerService: CustomerService,
-        private productService: ProductService
+        private productService: ProductService,
+        private solicitudService: SolicitudService
     ) {}
 
     ngOnInit() {
@@ -242,7 +196,188 @@ export class Solicitud implements OnInit{
             { label: 'Renewal', value: 'renewal' },
             { label: 'Proposal', value: 'proposal' }
         ];
+
+        this.solicitudService.getFacultades().subscribe(res => {
+        this.dropdownFacultad = res.map((f:any) => ({ name: f.c_codfac, value: f.c_codfac }));
+      });
     }
+
+    onChangeFacultad() {
+      this.solicitudService.getEspecialidades(this.selectedFacultad.value).subscribe(res => {
+        this.dropdownEspecialidad = res.map((e:any)=> ({ name: e.c_codesp, value: e.c_codesp }));
+      });
+    }
+
+    onChangeEspecialidad() {
+      this.solicitudService.getCiclos(this.selectedFacultad.value, this.selectedEspecialidad.value).subscribe(res => {
+        this.dropdownCiclo = res.map((c:any) => ({ name: `Ciclo ${c.n_ciclo}`, value: c.n_ciclo }));
+      });
+    }
+
+    onChangeCiclo() {
+      this.solicitudService.getModalidades(this.selectedFacultad.value, this.selectedEspecialidad.value, this.selectedCiclo.value).subscribe(res => {
+        this.dropdownModalidad = res.map((m:any) => ({ name: m.c_codmod, value: m.c_codmod }));
+      });
+    }
+
+    onChangeModalidad() {
+      this.solicitudService.getCursos(
+        this.selectedFacultad.value,
+        this.selectedEspecialidad.value,
+        this.selectedCiclo.value,
+        this.selectedModalidad.value
+      ).subscribe(res => {
+        this.dropdownCurso = res.map((c:any) => ({ 
+          name: c.c_nomcur, 
+          // name: `[${c.c_codcur}] - ${c.c_nomcur}`,
+          value: c.c_codcur }));
+      });
+    }
+
+    trackByCurso(index: number, item: any): string {
+      return item.value;
+    }
+
+//#region create, update, delete
+  formatHora(fecha: Date): string {
+    return fecha.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
+  enviarSolicitud(index: number) {
+    this.loadingEnviar[index] = true;
+
+    this.errores = {}; // reinicia errores
+    
+    this.mostrarErrores = true;
+
+    if (!this.selectedFacultad) this.errores.facultad = true;
+    if (!this.selectedEspecialidad) this.errores.especialidad = true;
+    if (!this.selectedCiclo) this.errores.ciclo = true;
+    if (!this.selectedModalidad) this.errores.modalidad = true;
+    if (!this.selectedCursos.length) this.errores.curso = true;
+    if (!this.radioValue) this.errores.tipo = true;
+    if (!this.horasDictar) this.errores.horasDictar = true;
+    if (!this.pagoHoras) this.errores.pagoHoras = true;
+    if (!this.selectedPrioridad) this.errores.prioridad = true;
+    if (!this.selectedCursos) this.errores.cursos = true;
+
+    const tieneErrores = Object.keys(this.errores).length > 0;
+
+    if (tieneErrores) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Campos incompletos',
+        detail: 'Por favor, completa todos los campos obligatorios.',
+        life: 4000,
+      });
+      this.loadingEnviar[index] = false;
+      return;
+    }
+
+    if (
+      !this.selectedFacultad ||
+      !this.selectedEspecialidad ||
+      !this.selectedCiclo ||
+      !this.selectedModalidad ||
+      !this.selectedCursos.length ||
+      !this.radioValue ||
+      !this.horasDictar ||
+      !this.pagoHoras ||
+      !this.selectedPrioridad
+    ) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Campos incompletos',
+        detail: 'Por favor, completa todos los campos obligatorios.',
+        life: 4000,
+      });
+      this.loadingEnviar[index] = false;
+      return;
+    }
+
+    this.mostrarErrores = false;
+
+    const tieneDisponibilidad = this.dias.some(dia =>
+      (dia.manianaInicio && dia.manianaFin) ||
+      (dia.nocheInicio && dia.nocheFin)
+    );
+
+    this.errorDisponibilidad = !tieneDisponibilidad;
+
+    if (this.errorDisponibilidad) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Disponibilidad requerida',
+        detail: 'Debes registrar al menos un turno disponible.',
+        life: 4000,
+      });
+      this.loadingEnviar[index] = false;
+      return;
+    }
+
+    const payload = {
+      tipo: this.radioValue,
+      horasDictar: this.horasDictar,
+      pagoHoras: Math.floor(this.pagoHoras),
+      prioridad: this.selectedPrioridad?.value,
+      observaciones: this.observaciones,
+      facultad: this.selectedFacultad?.value,
+      especialidad: this.selectedEspecialidad?.value,
+      ciclo: this.selectedCiclo?.value,
+      modalidad: this.selectedModalidad?.value,
+      curso: this.selectedCursos.map((c: any) => c.value), // array de c_codcur
+
+      disponibilidades: this.dias
+        .map((dia) => {
+          const turnos = [];
+
+          if (dia.manianaInicio && dia.manianaFin) {
+            turnos.push({
+              turno: 'Mañana',
+              horaInicio: this.formatHora(dia.manianaInicio),
+              horaFin: this.formatHora(dia.manianaFin),
+            });
+          }
+          if (dia.nocheInicio && dia.nocheFin) {
+            turnos.push({
+              turno: 'Noche',
+              horaInicio: this.formatHora(dia.nocheInicio),
+              horaFin: this.formatHora(dia.nocheFin),
+            });
+          }
+
+          if (turnos.length === 0) return null;
+
+          return {
+            dia: dia.nombre,
+            turnos,
+          };
+        })
+        .filter(Boolean),
+    };
+
+    this.solicitudService.createSolicitud(payload).subscribe({
+      next: (res) => {
+        console.log('Solicitud enviada:', res);
+        this.loadingEnviar[index] = false;
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Solicitud registrada',
+          detail: 'Se ha enviado correctamente',
+          life: 4000,
+        });
+
+        this.limpiarFormulario(); // ⬅️ nueva función para reiniciar
+      },
+      error: (err) => {
+        console.error('Error al enviar solicitud:', err);
+        this.loadingEnviar[index] = false;
+      },
+    });
+  }
+
+//#endregion
 
     onSort() {
         this.updateRowGroupMetaData();
@@ -349,8 +484,35 @@ export class Solicitud implements OnInit{
         return total;
     }
 
-    load(index: number) {
-        this.loadingEnviar[index] = true;
-        setTimeout(() => (this.loadingEnviar[index] = false), 1000);
+    // load(index: number) {
+    //     this.loadingEnviar[index] = true;
+    //     setTimeout(() => (this.loadingEnviar[index] = false), 1000);
+    // }
+
+    limpiarFormulario() {
+      this.selectedFacultad = null;
+      this.selectedEspecialidad = null;
+      this.selectedCiclo = null;
+      this.selectedModalidad = null;
+      this.selectedCursos = [];
+      this.radioValue = '';
+      this.selectedPrioridad = null;
+      this.horasDictar = 0;
+      this.pagoHoras = 0;
+      this.observaciones = '';
+
+      // Reset días y horarios
+      this.dias.forEach(dia => {
+        dia.manianaInicio = null;
+        dia.manianaFin = null;
+        dia.nocheInicio = null;
+        dia.nocheFin = null;
+      });
+
+      // Si quieres limpiar también los dropdowns dependientes:
+      this.dropdownEspecialidad = [];
+      this.dropdownCiclo = [];
+      this.dropdownModalidad = [];
+      this.dropdownCurso = [];
     }
 }
